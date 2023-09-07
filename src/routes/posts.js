@@ -58,7 +58,7 @@ router.get("/", async (req, res) => {
     },
     select: {
       postId: true,
-      User: {
+      Users: {
         select: {
             userId: true,
             nickname: true
@@ -89,7 +89,7 @@ router.get("/:postId", async (req, res) => {
       where: { postId: postId },
       select: {
         postId: true,
-        User: {
+        Users: {
             select: {
                 userId: true,
                 nickname: true
@@ -163,7 +163,7 @@ router.put("/:postId", authMiddleware, async (req, res) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.delete("/:_postId", authMiddleware, async (req, res) => {
+router.delete("/:postId", authMiddleware, async (req, res) => {
   try {
     const { postId } = req.params;
 
