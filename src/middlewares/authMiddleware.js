@@ -22,7 +22,7 @@ export default async function (req, res, next) {
     const userId = decodedToken.userId;
 
     const user = await prisma.users.findFirst({
-      where: { userId: +userId },
+      where: { userId: userId },
     });
 
     if (!user) {
