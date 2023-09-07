@@ -12,7 +12,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../utils/prisma/index.js";
 
-import authMiddleware from "../middlewares/auth.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
