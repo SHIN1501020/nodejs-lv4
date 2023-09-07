@@ -24,9 +24,9 @@ export default async function (req, res, next) {
     const user = await prisma.users.findFirst({
       where: { userId: +userId },
     });
-    
+
     if (!user) {
-      res.clearCookie("authorization");
+      res.clearCookie("Authorization");
       throw new Error("토큰 사용자가 존재하지 않습니다.");
     }
 
@@ -34,7 +34,7 @@ export default async function (req, res, next) {
 
     next();
   } catch (error) {
-    res.clearCookie("authorization");
+    res.clearCookie("Authorization");
     switch (error.name) {
       case "TokenExpiredError":
         return res.status(401).json({ message: "토큰이 만료되었습니다." });
