@@ -17,7 +17,7 @@ import authMiddleware from "../middlewares/auth.js";
 const router = express.Router();
 
 /**
- * 회원가입 API - POST '/sing-up'
+ * 회원가입 API - POST '/singup'
  *
  * @async
  * @function
@@ -25,7 +25,7 @@ const router = express.Router();
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.post("/sign-up", async (req, res, next) => {
+router.post("/signup", async (req, res, next) => {
   try {
     const { nickname, password, confirm } = req.body;
 
@@ -54,7 +54,7 @@ router.post("/sign-up", async (req, res, next) => {
 });
 
 /**
- * 로그인 API - POST '/sign-in'
+ * 로그인 API - POST '/login'
  *
  * @async
  * @function
@@ -62,7 +62,7 @@ router.post("/sign-up", async (req, res, next) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.post("/sign-in", async (req, res, next) => {
+router.post("/login", async (req, res, next) => {
   const { nickname, password } = req.body;
 
   const user = await prisma.users.findFirst({ where: { nickname } });
