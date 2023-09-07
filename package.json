@@ -1,0 +1,23 @@
+{
+  "name": "nodejs-lv3",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/SHIN1501020/nodejs-lv3.git",
+  "author": "SHIN1501020 <shin8hh@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon ./src/app.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.2.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^5.2.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1",
+    "nodemon": "^3.0.1"
+  }
+}
