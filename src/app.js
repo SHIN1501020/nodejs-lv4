@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
   return res.json({ message: "Hi!" });
 });
 
-app.use("/", [router, routes]);
+app.use("/api", [router, routes]);
 
 app.listen(PORT, () => {
   console.log(PORT, "포트로 서버가 열렸어요!");
