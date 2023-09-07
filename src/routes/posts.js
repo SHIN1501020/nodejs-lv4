@@ -1,9 +1,9 @@
 /**
  * 게시글 라우터 모듈
  *
- * 이 모듈은 게시글 생성, 조회, 상세 조회 관련된 라우트를 처리합니다.
+ * 이 모듈은 게시글 생성, 조회, 상세 조회, 수정, 삭제 관련된 라우트를 처리합니다.
  *
- * @module src/routes/post
+ * @module src/routes/post.js
  * @namespace PostsRouter
  */
 
