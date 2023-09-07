@@ -12,12 +12,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../utils/prisma/index.js";
 
-import authMiddleware from "../middlewares/authMiddleware.js";
-
 const router = express.Router();
 
 /**
- * 회원가입 API - POST '/singup'
+ * 회원가입 API - POST '/signup'
  *
  * @async
  * @function
