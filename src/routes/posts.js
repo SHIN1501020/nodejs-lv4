@@ -10,6 +10,9 @@
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
+import { validateBody } from "../utils/validation.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import validSchema from "../utils/joi/index.js"
 
 const router = express.Router();
 
@@ -22,8 +25,7 @@ const router = express.Router();
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.post("/", authMiddleware, async (req, res) => {
-  try {
+router.post("/", authMiddleware, validateBody(validSchema.post), asyncHandler(async (req, res) => {
     const { userId } = req.user;
     const { title, content } = req.body;
 
@@ -34,13 +36,9 @@ router.post("/", authMiddleware, async (req, res) => {
         content,
       },
     });
+
     return res.status(201).json({ message: "게시글을 생성하였습니다." });
-  } catch (err) {
-    return res
-      .status(400)
-      .json({ message: "데이터 형식이 올바르지 않습니다." });
-  }
-});
+}));
 
 /**
  * 게시글 조회 API - GET '/posts'
@@ -51,7 +49,7 @@ router.post("/", authMiddleware, async (req, res) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.get("/", async (req, res) => {
+router.get("/", asyncHandler(async (req, res) => {
   const posts = await prisma.posts.findMany({
     orderBy: {
       createdAt: "desc",
@@ -70,7 +68,7 @@ router.get("/", async (req, res) => {
     },
   });
   return res.status(200).json({ posts: posts });
-});
+}));
 
 /**
  * 게시글 상세 조회 API - GET '/posts/:postId'
@@ -81,8 +79,7 @@ router.get("/", async (req, res) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.get("/:postId", async (req, res) => {
-  try {
+router.get("/:postId", asyncHandler(async (req, res) => {
     const { postId } = req.params;
 
     const currentPost = await prisma.posts.findFirst({
@@ -102,16 +99,11 @@ router.get("/:postId", async (req, res) => {
     });
 
     if (!currentPost) {
-      return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
+      return res.status(404).json({ errorMessage: "게시글 조회에 실패하였습니다." });
     }
 
-    return res.status(200).json({ data: currentPost });
-  } catch (err) {
-    return res
-      .status(400)
-      .json({ message: "데이터 형식이 올바르지 않습니다." });
-  }
-});
+    return res.status(200).json({ post: currentPost });
+}));
 
 /**
  * 게시글 수정 API - PUT '/posts/:postId'
@@ -122,9 +114,9 @@ router.get("/:postId", async (req, res) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.put("/:postId", authMiddleware, async (req, res) => {
-  try {
+router.put("/:postId", authMiddleware, validateBody(validSchema.post), asyncHandler(async (req, res) => {
     const { postId } = req.params;
+    const { userId } = req.user;
     const { title, content } = req.body;
 
     const currentPost = await prisma.posts.findUnique({
@@ -134,7 +126,11 @@ router.put("/:postId", authMiddleware, async (req, res) => {
     });
 
     if (!currentPost) {
-      return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
+      return res.status(404).json({ errorMessage: "게시글 조회에 실패하였습니다." });
+    }
+
+    if(currentPost.UserId !== userId){
+      return res.status(403).json({ errorMessage: "게시글 수정 권한이 존재하지 않습니다." });
     }
 
     await prisma.posts.update({
@@ -147,12 +143,7 @@ router.put("/:postId", authMiddleware, async (req, res) => {
     });
 
     return res.status(200).json({ message: "게시글을 수정하였습니다." });
-  } catch (err) {
-    return res
-      .status(400)
-      .json({ message: "데이터 형식이 올바르지 않습니다." });
-  }
-});
+}));
 
 /**
  * 게시글 수정 API - DELETE '/posts/:postId'
@@ -163,9 +154,9 @@ router.put("/:postId", authMiddleware, async (req, res) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.delete("/:postId", authMiddleware, async (req, res) => {
-  try {
+router.delete("/:postId", authMiddleware, asyncHandler(async (req, res) => {
     const { postId } = req.params;
+    const { userId } = req.user;
 
     const currentPost = await prisma.posts.findFirst({
       where: { postId: postId },
@@ -175,17 +166,16 @@ router.delete("/:postId", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
     }
 
+    if(currentPost.UserId !== userId){
+      return res.status(403).json({ errorMessage: "게시글 삭제 권한이 존재하지 않습니다." });
+    }
+
     await prisma.posts.delete({ 
     where: { 
         postId: postId
     } });
 
     return res.status(200).json({ message: "게시글을 삭제하였습니다." });
-  } catch (err) {
-    return res
-      .status(400)
-      .json({ message: "데이터 형식이 올바르지 않습니다." });
-  }
-});
+}));
 
 export default router;

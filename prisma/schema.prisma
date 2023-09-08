@@ -46,7 +46,7 @@ model Posts {
 // comments
 model Comments {
   commentId     String    @id @default(uuid()) @map("id")
-  content       String    @db.Text @map("content") 
+  comment       String    @db.Text @map("comment") 
   createdAt     DateTime  @default(now()) @map("createdAt")
   updatedAt     DateTime  @updatedAt @map("updatedAt")
   
