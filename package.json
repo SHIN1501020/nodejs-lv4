@@ -7,7 +7,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "nodemon ./src/app.js"
+    "start": "nodemon ./src/app.js",
+    "format": "prettier --write *.js **/*.js"
   },
   "dependencies": {
     "@prisma/client": "^5.2.0",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "dotenv": "^16.3.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3"
   }
 }
