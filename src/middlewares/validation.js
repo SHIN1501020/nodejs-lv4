@@ -5,8 +5,8 @@ export const validateBody = (schema) => {
       req.body = validatedBody;
       next();
     } catch (err) {
-      console.log(err)
-      console.log(err.details[0])
+      // console.log(err)
+      // console.log(err.details[0])
       next(err);
     }
   };

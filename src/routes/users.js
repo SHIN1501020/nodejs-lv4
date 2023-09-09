@@ -13,7 +13,7 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../utils/prisma/index.js";
 import { validateBody } from "../middlewares/validation.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
-import validSchema from "../utils/joi/index.js";
+import ValidSchema from "../utils/joi/index.js";
 import { CustomError } from "../utils/errors/CustomError.js";
 import { Message } from "../constants/index.js";
 
@@ -28,7 +28,7 @@ const router = express.Router();
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.post("/signup", validateBody(validSchema.signup), asyncHandler(async (req, res, next) => {
+router.post("/signup", validateBody(ValidSchema.signup), asyncHandler(async (req, res, next) => {
     const { nickname, password, confirm } = req.body;
 
     const isExistUser = await prisma.users.findFirst({

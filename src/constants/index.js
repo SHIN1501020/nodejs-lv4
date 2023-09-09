@@ -45,6 +45,10 @@ export const Message = {
     COMMENT_EDIT_NOT_COMPLETED : "댓글 수정이 정상적으로 처리되지 않았습니다.",
     COMMENT_EDIT_FAILED : "댓글 수정에 실패하였습니다.",
     COMMENT_EDIT_SUCCESS : "댓글을 수정하였습니다.",
-    COMMENT_DELETE_SUCCESS : "댓글을 삭제하였습니다."
+    COMMENT_DELETE_SUCCESS : "댓글을 삭제하였습니다.",
+
+    INTERNAL_SERVER_ERROR : "서버 내부 오류가 발생했습니다.",
+    DATABASE_ERROR : "데이터베이스 오류가 발생했습니다.",
+    UNEXPECTED_ERROR : "예상치 못한 오류가 발생했습니다.",
 
 }

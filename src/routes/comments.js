@@ -11,7 +11,7 @@ import { prisma } from "../utils/prisma/index.js";
 import authMiddleware from "../middlewares/auth.js";
 import { validateBody } from "../middlewares/validation.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
-import validSchema from "../utils/joi/index.js";
+import ValidSchema from "../utils/joi/index.js";
 import { CustomError } from "../utils/errors/CustomError.js";
 import { Message } from "../constants/index.js";
 
@@ -27,7 +27,7 @@ const router = express.Router();
  * @param {function} next - next 미들웨어 함수
  */
 router.post(
-  "/:postId/comments", authMiddleware, validateBody(validSchema.comment), asyncHandler(async (req, res) => {
+  "/:postId/comments", authMiddleware, validateBody(ValidSchema.comment), asyncHandler(async (req, res) => {
     const { postId } = req.params;
     const { userId } = req.user;
     const { comment } = req.body;
@@ -106,7 +106,7 @@ router.get("/:postId/comments", asyncHandler(async (req, res) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.put("/:postId/:commentId", authMiddleware, validateBody(validSchema.comment), asyncHandler(async (req, res) => {
+router.put("/:postId/:commentId", authMiddleware, validateBody(ValidSchema.comment), asyncHandler(async (req, res) => {
     const { postId, commentId } = req.params;
     const { userId } = req.user;
     const { comment } = req.body;

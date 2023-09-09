@@ -37,7 +37,8 @@ export default async function (req, res, next) {
 
     next();
   } catch (error) {
-    res.clearCookie("Authorization");
+    //? 어떻게 손 봐야할지 모르겠다.
+    res.clearCookie("Authorization"); //!쿠기 지우면 값은 없어지는데 'Authorization' 키는 남아있다.
     switch (error.name) {
       case "TokenExpiredError":
         return res.status(401).json({ message: "토큰이 만료되었습니다." });
