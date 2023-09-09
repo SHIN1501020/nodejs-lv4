@@ -143,7 +143,7 @@ router.put("/:postId", authMiddleware, validateBody(ValidSchema.post), asyncHand
 );
 
 /**
- * 게시글 수정 API - DELETE '/posts/:postId'
+ * 게시글 삭제 API - DELETE '/posts/:postId'
  *
  * @async
  * @function

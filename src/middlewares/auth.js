@@ -3,7 +3,7 @@
  *
  * 이 모듈은 jwt 인증 관련 미들웨어입니다.
  *
- * @module scr/middlewares/auth
+ * @module scr/middlewares/auth.js
  * @namespace authMiddleware
  */
 

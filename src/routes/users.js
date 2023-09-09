@@ -23,7 +23,6 @@ const router = express.Router();
  * 회원가입 API - POST '/signup'
  *
  * @async
- * @function
  * @param {object} req - 요청 객체
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
