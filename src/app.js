@@ -2,7 +2,7 @@ import express from "express";
 import routes from "./routes/index.js";
 import cookieParser from "cookie-parser";
 import { config } from "dotenv";
-import { errorHandler } from "./utils/errorHandler.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 config();
 const app = express();

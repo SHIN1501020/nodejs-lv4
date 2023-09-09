@@ -11,9 +11,11 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../utils/prisma/index.js";
-import { validateBody } from "../utils/validation.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { validateBody } from "../middlewares/validation.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 import validSchema from "../utils/joi/index.js";
+import { CustomError } from "../utils/errors/CustomError.js";
+import { Message } from "../constants/index.js";
 
 const router = express.Router();
 
@@ -26,19 +28,14 @@ const router = express.Router();
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.post(
-  "/signup",
-  validateBody(validSchema.signup),
-  asyncHandler(async (req, res, next) => {
+router.post("/signup", validateBody(validSchema.signup), asyncHandler(async (req, res, next) => {
     const { nickname, password, confirm } = req.body;
 
     const isExistUser = await prisma.users.findFirst({
       where: { nickname },
     });
 
-    if (isExistUser) {
-      return res.status(409).json({ errorMessage: "중복된 닉네임 입니다." });
-    }
+    if (isExistUser) throw new CustomError(412, Message.DUPLICATE_NICKNAME)
 
     //* 비밀 번호 암호화
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -51,7 +48,7 @@ router.post(
       },
     });
 
-    return res.status(201).json({ message: "회원가입이 완료되었습니다." });
+    return res.status(201).json({ message: Message.SIGNUP_SUCCEED });
   })
 );
 
@@ -64,23 +61,13 @@ router.post(
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.post(
-  "/login",
-  asyncHandler(async (req, res, next) => {
+router.post("/login", asyncHandler(async (req, res, next) => {
     const { nickname, password } = req.body;
 
     const user = await prisma.users.findFirst({ where: { nickname } });
-    if (!user) {
-      return res
-        .status(401)
-        .json({ errorMessage: "닉네임 또는 패스워드를 확인해주세요." });
-    }
+    if (!user) throw new CustomError(412, Message.USER_DOES_NOT_EXIST)
 
-    if (!(await bcrypt.compare(password, user.password))) {
-      return res
-        .status(401)
-        .json({ errorMessage: "닉네임 또는 패스워드를 확인해주세요." });
-    }
+    if (!(await bcrypt.compare(password, user.password))) throw new CustomError(412, Message.USER_DOES_NOT_EXIST)
 
     const token = jwt.sign(
       {
@@ -90,7 +77,7 @@ router.post(
     );
 
     res.cookie("Authorization", `Bearer ${token}`);
-    return res.status(200).json({ message: "로그인 성공했습니다." });
+    return res.status(200).json({ message: Message.LOGIN_SUCCEED });
   })
 );
 

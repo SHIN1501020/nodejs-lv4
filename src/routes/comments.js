@@ -8,10 +8,12 @@
  */
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
-import authMiddleware from "../middlewares/authMiddleware.js";
-import { validateBody } from "../utils/validation.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import authMiddleware from "../middlewares/auth.js";
+import { validateBody } from "../middlewares/validation.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 import validSchema from "../utils/joi/index.js";
+import { CustomError } from "../utils/errors/CustomError.js";
+import { Message } from "../constants/index.js";
 
 const router = express.Router();
 
@@ -25,10 +27,7 @@ const router = express.Router();
  * @param {function} next - next 미들웨어 함수
  */
 router.post(
-  "/:postId/comments",
-  authMiddleware,
-  validateBody(validSchema.comment),
-  asyncHandler(async (req, res) => {
+  "/:postId/comments", authMiddleware, validateBody(validSchema.comment), asyncHandler(async (req, res) => {
     const { postId } = req.params;
     const { userId } = req.user;
     const { comment } = req.body;
@@ -39,11 +38,7 @@ router.post(
       },
     });
 
-    if (!post) {
-      return res
-        .status(404)
-        .json({ errorMessage: "게시글이 존재하지 않습니다." });
-    }
+    if (!post) throw new CustomError(404, Message.POST_DOES_NOT_EXIST)
 
     await prisma.comments.create({
       data: {
@@ -53,7 +48,7 @@ router.post(
       },
     });
 
-    return res.status(201).json({ message: "댓글을 작성하였습니다." });
+    return res.status(201).json({ message: Message.COMMENT_CREATED});
   })
 );
 
@@ -66,9 +61,7 @@ router.post(
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.get(
-  "/:postId/comments",
-  asyncHandler(async (req, res) => {
+router.get("/:postId/comments", asyncHandler(async (req, res) => {
     const { postId } = req.params;
 
     const post = await prisma.posts.findFirst({
@@ -77,11 +70,7 @@ router.get(
       },
     });
 
-    if (!post) {
-      return res
-        .status(404)
-        .json({ errorMessage: "게시글이 존재하지 않습니다." });
-    }
+    if (!post) throw new CustomError(404, Message.POST_DOES_NOT_EXIST)
 
     const comments = await prisma.comments.findMany({
       where: {
@@ -117,11 +106,7 @@ router.get(
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.put(
-  "/:postId/:commentId",
-  authMiddleware,
-  validateBody(validSchema.comment),
-  asyncHandler(async (req, res) => {
+router.put("/:postId/:commentId", authMiddleware, validateBody(validSchema.comment), asyncHandler(async (req, res) => {
     const { postId, commentId } = req.params;
     const { userId } = req.user;
     const { comment } = req.body;
@@ -131,11 +116,8 @@ router.put(
         postId: postId,
       },
     });
-    if (!post) {
-      return res
-        .status(404)
-        .json({ errorMessage: "게시글이 존재하지 않습니다." });
-    }
+
+    if (!post) throw new CustomError(404, Message.POST_DOES_NOT_EXIST)
 
     const currentComment = await prisma.comments.findFirst({
       where: {
@@ -143,17 +125,9 @@ router.put(
         commentId: commentId,
       },
     });
-    if (!currentComment) {
-      return res
-        .status(404)
-        .json({ errorMessage: "댓글이 존재하지 않습니다." });
-    }
 
-    if (currentComment.UserId !== userId) {
-      return res
-        .status(403)
-        .json({ errorMessage: "댓글 수정 권한이 존재하지 않습니다." });
-    }
+    if (!currentComment) throw new CustomError(404, Message.COMMENT_DOES_NOT_EXIST)
+    if (currentComment.UserId !== userId) throw new CustomError(400, Message.COMMENT_EDIT_PERMISSION_DENIED)
 
     //? 위에 선언한 currentComment 그대로 사용할 수 있는 방법은?
     await prisma.comments.update({
@@ -165,7 +139,7 @@ router.put(
       },
     });
 
-    return res.status(200).json({ message: "댓글을 수정하였습니다." });
+    return res.status(200).json({ message: Message.COMMENT_EDIT_SUCCESS });
   })
 );
 
@@ -178,10 +152,7 @@ router.put(
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.delete(
-  "/:postId/:commentId",
-  authMiddleware,
-  asyncHandler(async (req, res) => {
+router.delete("/:postId/:commentId", authMiddleware, asyncHandler(async (req, res) => {
     const { postId, commentId } = req.params;
     const { userId } = req.user;
 
@@ -190,11 +161,8 @@ router.delete(
         postId: postId,
       },
     });
-    if (!post) {
-      return res
-        .status(404)
-        .json({ errorMessage: "게시글이 존재하지 않습니다." });
-    }
+
+    if (!post) throw new CustomError(404, Message.POST_DOES_NOT_EXIST)
 
     const currentComment = await prisma.comments.findFirst({
       where: {
@@ -202,17 +170,9 @@ router.delete(
         commentId: commentId,
       },
     });
-    if (!currentComment) {
-      return res
-        .status(404)
-        .json({ errorMessage: "댓글이 존재하지 않습니다." });
-    }
 
-    if (currentComment.UserId !== userId) {
-      return res
-        .status(403)
-        .json({ errorMessage: "댓글 삭제 권한이 존재하지 않습니다." });
-    }
+    if (!currentComment) throw new CustomError(404, Message.COMMENT_DOES_NOT_EXIST)
+    if (currentComment.UserId !== userId) throw new CustomError(400, Message.COMMENT_DELETE_PERMISSION_DENIED)
 
     await prisma.comments.delete({
       where: {
@@ -222,7 +182,7 @@ router.delete(
       },
     });
 
-    return res.status(200).json({ message: "댓글을 삭제하였습니다." });
+    return res.status(200).json({ message: Message.COMMENT_DELETE_SUCCESS });
   })
 );
 

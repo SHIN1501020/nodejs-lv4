@@ -6,13 +6,14 @@
  * @module src/routes/post.js
  * @namespace PostsRouter
  */
-
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
-import authMiddleware from "../middlewares/authMiddleware.js";
-import { validateBody } from "../utils/validation.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import authMiddleware from "../middlewares/auth.js";
+import { validateBody } from "../middlewares/validation.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 import validSchema from "../utils/joi/index.js";
+import { CustomError } from "../utils/errors/CustomError.js";
+import { Message } from "../constants/index.js";
 
 const router = express.Router();
 
@@ -25,12 +26,8 @@ const router = express.Router();
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.post(
-  "/",
-  authMiddleware,
-  validateBody(validSchema.post),
-  asyncHandler(async (req, res) => {
-    const { userId } = req.user;
+router.post("/", authMiddleware, validateBody(validSchema.post), asyncHandler(async (req, res) => {
+    const { userId } = req.user;    
     const { title, content } = req.body;
 
     await prisma.posts.create({
@@ -41,7 +38,7 @@ router.post(
       },
     });
 
-    return res.status(201).json({ message: "게시글을 생성하였습니다." });
+    return res.status(201).json({ message: Message.POST_CREATED });
   })
 );
 
@@ -54,9 +51,7 @@ router.post(
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.get(
-  "/",
-  asyncHandler(async (req, res) => {
+router.get("/", asyncHandler(async (req, res) => {
     const posts = await prisma.posts.findMany({
       orderBy: {
         createdAt: "desc",
@@ -87,9 +82,7 @@ router.get(
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.get(
-  "/:postId",
-  asyncHandler(async (req, res) => {
+router.get("/:postId", asyncHandler(async (req, res) => {
     const { postId } = req.params;
 
     const currentPost = await prisma.posts.findFirst({
@@ -108,12 +101,6 @@ router.get(
       },
     });
 
-    if (!currentPost) {
-      return res
-        .status(404)
-        .json({ errorMessage: "게시글 조회에 실패하였습니다." });
-    }
-
     return res.status(200).json({ post: currentPost });
   })
 );
@@ -127,11 +114,7 @@ router.get(
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.put(
-  "/:postId",
-  authMiddleware,
-  validateBody(validSchema.post),
-  asyncHandler(async (req, res) => {
+router.put("/:postId", authMiddleware, validateBody(validSchema.post), asyncHandler(async (req, res) => {
     const { postId } = req.params;
     const { userId } = req.user;
     const { title, content } = req.body;
@@ -142,18 +125,9 @@ router.put(
       },
     });
 
-    if (!currentPost) {
-      return res
-        .status(404)
-        .json({ errorMessage: "게시글 조회에 실패하였습니다." });
-    }
-
-    if (currentPost.UserId !== userId) {
-      return res
-        .status(403)
-        .json({ errorMessage: "게시글 수정 권한이 존재하지 않습니다." });
-    }
-
+    if (!currentPost) throw new CustomError(404, Message.POST_DOES_NOT_EXIST)
+    if (currentPost.UserId !== userId) throw new CustomError(403, Message.POST_EDIT_PERMISSION_DENIED)
+    
     await prisma.posts.update({
       data: {
         title,
@@ -164,7 +138,7 @@ router.put(
       },
     });
 
-    return res.status(200).json({ message: "게시글을 수정하였습니다." });
+    return res.status(200).json({ message: Message.POST_EDIT_SUCCESS });
   })
 );
 
@@ -177,10 +151,7 @@ router.put(
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.delete(
-  "/:postId",
-  authMiddleware,
-  asyncHandler(async (req, res) => {
+router.delete("/:postId", authMiddleware, asyncHandler(async (req, res) => {
     const { postId } = req.params;
     const { userId } = req.user;
 
@@ -190,15 +161,9 @@ router.delete(
       },
     });
 
-    if (!currentPost) {
-      return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
-    }
+    if (!currentPost) throw new CustomError(404, Message.POST_DOES_NOT_EXIST)
 
-    if (currentPost.UserId !== userId) {
-      return res
-        .status(403)
-        .json({ errorMessage: "게시글 삭제 권한이 존재하지 않습니다." });
-    }
+    if (currentPost.UserId !== userId) throw new CustomError(403, Message.POST_DELETE_PERMISSION_DENIED)
 
     await prisma.posts.delete({
       where: {
@@ -206,7 +171,7 @@ router.delete(
       },
     });
 
-    return res.status(200).json({ message: "게시글을 삭제하였습니다." });
+    return res.status(200).json({ message: Message.POST_DELETE_SUCCESS });
   })
 );
 
