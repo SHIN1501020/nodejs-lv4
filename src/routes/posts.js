@@ -67,7 +67,13 @@ router.get("/", asyncHandler(async (req, res) => {
         title: true,
         createdAt: true,
         updatedAt: true,
+        _count: {
+          select: {
+            Likes: true,
+          }
+        }
       },
+      
     });
     return res.status(200).json({ posts: posts });
   })
@@ -98,6 +104,11 @@ router.get("/:postId", asyncHandler(async (req, res) => {
         content: true,
         createdAt: true,
         updatedAt: true,
+        _count: {
+          select: {
+            Likes: true,
+          }
+        }
       },
     });
 

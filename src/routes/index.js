@@ -10,10 +10,11 @@ import express from "express";
 import UsersRouter from "./users.js";
 import PostsRouter from "./posts.js";
 import CommentsRouter from "./comments.js";
+import LikesRouter from "./likes.js";
 
 const router = express.Router();
 
 router.use("/", UsersRouter);
-router.use("/posts", [PostsRouter, CommentsRouter]);
+router.use("/posts", [PostsRouter, CommentsRouter, LikesRouter]);
 
 export default router;

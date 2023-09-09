@@ -50,5 +50,8 @@ export const Message = {
     INTERNAL_SERVER_ERROR : "서버 내부 오류가 발생했습니다.",
     DATABASE_ERROR : "데이터베이스 오류가 발생했습니다.",
     UNEXPECTED_ERROR : "예상치 못한 오류가 발생했습니다.",
+    
+    POST_LIKE : "게시글의 좋아요를 등록하였습니다.",
+    POST_UNLIKE : "게시글의 좋아요를 취소하였습니다."
 
 }

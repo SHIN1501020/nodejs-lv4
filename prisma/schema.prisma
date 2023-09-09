@@ -21,7 +21,8 @@ model Users {
   // 관계 설정
   Posts     Posts[] // 사용자(Users) 테이블과 게시글(Posts) 테이블이 1:N 관계를 맺습니다.
   Comments  Comments[] // 사용자(Users) 테이블과 댓글(Comments) 테이블이 1:N 관계를 맺습니다.
-
+  Likes    Likes[] // 사용자(Users) 테이블과 좋아요(Likes) 테이블이 1:N 관계를 맺습니다.
+ 
   @@map("Users")
 }
 
@@ -39,6 +40,7 @@ model Posts {
   // 관계 설정
   Comments    Comments[] //Posts 테이블과 Comments 테이블이 1:N 관계를 맺습니다.
   Users       Users     @relation(fields: [UserId], references: [userId], onDelete: Cascade)
+  Likes       Likes[] // 게시글(Posts) 테이블과 좋아요(Likes) 테이블이 1:N 관계를 맺습니다.
 
   @@map("Posts")
 }
@@ -59,4 +61,18 @@ model Comments {
   Users         Users     @relation(fields: [UserId], references: [userId], onDelete: Cascade)
 
   @@map("Comments")
+}
+
+model Likes {
+  likeId    String      @id @default(uuid()) @map("likeId")
+  createdAt DateTime    @default(now()) @map("createdAt")
+  updatedAt DateTime    @updatedAt @map("updatedAt")
+
+  Posts     Posts       @relation(fields: [PostId], references: [postId], onDelete: Cascade)
+  Users     Users       @relation(fields: [UserId], references: [userId], onDelete: Cascade)
+  
+  PostId    String      @map("PostId") // 게시글(Posts) 테이블을 참조하는 외래키
+  UserId    String      @map("UserId") // 사용자(Users) 테이블을 참조하는 외래키
+
+  @@map("Likes")
 }
