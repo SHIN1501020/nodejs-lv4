@@ -11,10 +11,10 @@ import { CustomError } from "../utils/errors/CustomError.js";
  */
 
 export const errorHandler = (error, req, res, next) => {
-  // console.log(error.stack);
+  console.log(error.stack);
   if (error instanceof CustomError) {
     // CustomError 클래스의 인스턴스인 경우, 에러 상태 코드 및 메시지 반환
-    return res.status(err.status).json({ errorMessage: err.message });
+    return res.status(error.status).json({ errorMessage: error.message });
   }
 
   switch(error.name){
