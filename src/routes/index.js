@@ -7,14 +7,14 @@
  * @namespace routes
  */
 import express from "express";
-import UsersRouter from "./users.js";
-import PostsRouter from "./posts.js";
-import CommentsRouter from "./comments.js";
-import LikesRouter from "./likes.js";
+import usersRouter from "./users.js";
+import postsRouter from "./posts.js";
+import commentsRouter from "./comments.js";
+import likesRouter from "./likes.js";
 
 const router = express.Router();
 
-router.use("/", UsersRouter);
-router.use("/posts", [PostsRouter, CommentsRouter, LikesRouter]);
+router.use("/", usersRouter);
+router.use("/posts", [postsRouter, commentsRouter, likesRouter]);
 
 export default router;

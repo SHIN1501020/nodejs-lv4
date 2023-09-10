@@ -26,9 +26,8 @@ export const validateBody = (schema) => {
       next();
     } catch (err) {
         const { type, message } = err.details[0]
-        console.log(message)
-        if(type === 'any.required') next(new BAD_REQUEST(message)); // Bad Request error
-        next(new VALIDITY_ERROR(message)) // 유효성 검사 에러
+        if(type === 'any.required') return next(new BAD_REQUEST(message)); // Bad Request error
+        return next(new VALIDITY_ERROR(message)) // 유효성 검사 에러
     }
   };
 };

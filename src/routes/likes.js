@@ -9,9 +9,7 @@
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
 import authMiddleware from "../middlewares/auth.js";
-import { validateBody } from "../middlewares/validation.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
-import ValidSchema from "../utils/joi/index.js";
 import { CustomError } from "../utils/errors/CustomError.js";
 import { Message } from "../constants/index.js";
 

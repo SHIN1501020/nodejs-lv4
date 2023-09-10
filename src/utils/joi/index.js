@@ -14,7 +14,7 @@ class ValidSchema {
     messages: {
         'any.required' : '데이터 형식이 올바르지 않습니다.',
         'string.pattern.base': '{#label} 형식이 일치하지 않습니다.',
-        'any.only': '{#label} 형식이 일치하지 않습니다.',
+        'any.only': '비밀번호가 일치하지 않습니다.',
         'string.empty': '{#label} 내용을 입력해주세요.'
       },
       errors:{
@@ -23,12 +23,8 @@ class ValidSchema {
         }
       }
   }));  
-  // 정규표현식
-  re_nickname = /^[a-zA-Z0-9]{3,10}$/;
-  re_password = /^[a-zA-Z0-9]{4,30}$/;
-  re_title = /^.{1,10}$/;
-  re_content = /^.{0,50}$/;
-  re_comment = /^.{1,20}$/;
+
+
   /**
    * @typedef {object} SchemaSignup
    * @property {string} nickname - 닉네임
@@ -45,8 +41,8 @@ class ValidSchema {
    * @member {Joi.ObjectSchema<SchemaSignup>} signup
    */
   signup = this.joi.object({
-    nickname: this.joi.string().pattern(this.re_nickname).empty('').allow('').required().label("닉네임"),
-    password: this.joi.string().pattern(this.re_password).empty('').allow('').required().label("비밀번호"),
+    nickname: this.joi.string().pattern(/^[a-zA-Z0-9]{3,10}$/).empty('').allow('').required().label("닉네임"),
+    password: this.joi.string().pattern(/^[a-zA-Z0-9]{4,30}$/).empty('').allow('').required().label("비밀번호"),
     confirm: this.joi.valid(this.joi.ref("password")).empty('').allow('').required().label("비밀번호"),
   }).custom((value, helpers)=>{
     //* 비밀번호에 닉네임이 포함된 경우 처리
@@ -55,6 +51,7 @@ class ValidSchema {
     // error.details.context label, key에 객체가 들어가는 상태 : object에 custom 사용해서 그런 것 같다.
     //return value.password.includes(value.nickname) ? helpers.error("any.invalid", { value }, "PASSWORDINCLUDEDNICKNAM") : value
   });
+
 
   /**
    * @typedef {object} SchemaPost
@@ -70,9 +67,10 @@ class ValidSchema {
    * @member {Joi.ObjectSchema<SchemaPost>} post
    */
   post = this.joi.object({
-    title: this.joi.string().pattern(this.re_title).empty('').allow('').required().label("제목"),
-    content: this.joi.string().pattern(this.re_content).empty('').allow('').required().label("내용"),
+    title: this.joi.string().pattern(/^.{1,10}$/).empty('').allow('').required().label("제목"),
+    content: this.joi.string().pattern(/^.{0,50}$/).empty('').allow('').required().label("내용"),
   });
+
 
   /**
    * @typedef {object} SchemaComment
@@ -87,7 +85,7 @@ class ValidSchema {
    * @member {Joi.ObjectSchema<SchemaComment>} comment
    */
   comment = this.joi.object({
-    comment: this.joi.string().pattern(this.re_comment).required().label("댓글"),
+    comment: this.joi.string().pattern(/^.{1,20}$/).required().label("댓글"),
   });
 }
 //? export 방식
