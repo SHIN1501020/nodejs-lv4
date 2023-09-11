@@ -15,6 +15,6 @@ import likesRouter from "./likes.js";
 const router = express.Router();
 
 router.use("/", usersRouter);
-router.use("/posts", [postsRouter, commentsRouter, likesRouter]);
+router.use("/posts", [likesRouter, postsRouter, commentsRouter]); // likesRouter를 앞으로
 
 export default router;

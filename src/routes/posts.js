@@ -26,7 +26,7 @@ const router = express.Router();
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.post("/", authMiddleware, validateBody(ValidSchema.post), asyncHandler(async (req, res) => {
+router.post("/", authMiddleware, validateBody(ValidSchema.post), asyncHandler(async (req, res, next) => {
     const { userId } = req.user;    
     const { title, content } = req.body;
 
@@ -51,7 +51,7 @@ router.post("/", authMiddleware, validateBody(ValidSchema.post), asyncHandler(as
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.get("/", asyncHandler(async (req, res) => {
+router.get("/", asyncHandler(async (req, res, next) => {
     const posts = await prisma.posts.findMany({
       orderBy: {
         createdAt: "desc",
@@ -88,7 +88,7 @@ router.get("/", asyncHandler(async (req, res) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.get("/:postId", asyncHandler(async (req, res) => {
+router.get("/:postId", asyncHandler(async (req, res, next) => {
     const { postId } = req.params;
 
     const currentPost = await prisma.posts.findFirst({
@@ -125,7 +125,7 @@ router.get("/:postId", asyncHandler(async (req, res) => {
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.put("/:postId", authMiddleware, validateBody(ValidSchema.post), asyncHandler(async (req, res) => {
+router.put("/:postId", authMiddleware, validateBody(ValidSchema.post), asyncHandler(async (req, res, next) => {
     const { postId } = req.params;
     const { userId } = req.user;
     const { title, content } = req.body;
@@ -162,7 +162,7 @@ router.put("/:postId", authMiddleware, validateBody(ValidSchema.post), asyncHand
  * @param {object} res - 응답 객체
  * @param {function} next - next 미들웨어 함수
  */
-router.delete("/:postId", authMiddleware, asyncHandler(async (req, res) => {
+router.delete("/:postId", authMiddleware, asyncHandler(async (req, res, next) => {
     const { postId } = req.params;
     const { userId } = req.user;
 

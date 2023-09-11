@@ -54,7 +54,7 @@ router.post('/:postId/like', authMiddleware, asyncHandler(async(req, res, next)=
       return res.status(200).json({ message: Message.POST_UNLIKE})
 }));
 
-router.patch('/like', authMiddleware, asyncHandler(async (req, res, next)=>{
+router.get('/like', authMiddleware, asyncHandler(async (req, res, next)=>{
     const { userId } = req.user;
     const posts = await prisma.posts.findMany({
         where:{
