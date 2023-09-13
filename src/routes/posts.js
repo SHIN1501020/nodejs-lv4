@@ -101,6 +101,7 @@ router.get("/:postId", asyncHandler(async (req, res, next) => {
             nickname: true,
           },
         },
+        title: true,
         content: true,
         createdAt: true,
         updatedAt: true,

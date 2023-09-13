@@ -34,7 +34,6 @@ export default async function (req, res, next) {
     }
 
     req.user = user;
-    console.log("다음으로 넘어갔나")
     next();
   } catch (error) {
     //? 어떻게 손 봐야할지 모르겠다.

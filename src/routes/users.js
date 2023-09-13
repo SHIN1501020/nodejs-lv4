@@ -40,7 +40,7 @@ router.post("/signup", validateBody(ValidSchema.signup), asyncHandler(async (req
     const hashedPassword = await bcrypt.hash(password, 10);
 
     //* 사용자(user) 생성
-    const user = await prisma.users.create({
+    await prisma.users.create({
       data: {
         nickname,
         password: hashedPassword,

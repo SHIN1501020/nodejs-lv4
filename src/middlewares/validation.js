@@ -1,7 +1,7 @@
 import  { BAD_REQUEST } from "../utils/errors/BadRequest.js"
 import { VALIDITY_ERROR } from "../utils/errors/ValidityError.js"
 /**
- * 유효성 검사를 확인해주는 함수
+ * 유효성 검사를 확인해주는 미들웨어
  * 
  * @function
  * @param {Joi.ObjectSchema} schema 
